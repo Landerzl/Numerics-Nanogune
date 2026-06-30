@@ -1,27 +1,27 @@
-# Acoplamiento Magnético en 7-AGNR
+# Magnetic Coupling in 7-AGNRs
 
-Este repositorio contiene los scripts y cálculos para estudiar el acoplamiento magnético de intercambio ($J$) en nanodiscos y cintas de grafeno finitas de tipo 7-AGNR (Armchair Graphene Nanoribbons).
+This repository contains scripts and calculations to study the magnetic exchange coupling ($J$) in finite armchair graphene nanoribbons of the 7-AGNR type.
 
-## Contenido
+## Contents
 
-- **`Main/sisl_hubbard_7agnr.py`**: Es el script principal del proyecto. Se encarga de construir la geometría de las cintas de diferentes longitudes, definir el Hamiltoniano de Tight-Binding y calcular $J$ usando dos aproximaciones distintas para poder compararlas:
-  1. **Dímero de Hubbard Efectivo**: Un modelo simplificado que extrae $t_{\mathrm{eff}}$ y $U_{\mathrm{eff}}$ para dar $J = 4t_{\mathrm{eff}}^2 / U_{\mathrm{eff}}$.
-  2. **Hubbard en Campo Medio (MFH)**: Un cálculo self-consistent iterativo que evalúa la diferencia de energía real entre los estados Ferromagnético (FM) y Antiferromagnético (AFM).
-- **`Main/23-06-2026.py`**: Una versión más de "andar por casa" que usa solo `numpy` y `scipy` para comprobar la regla del dímero y ver la probabilidad de los estados topológicos.
-- **`Main/plot_spin_polarization_en.py`**: Script para visualizar cómo se distribuyen los espines en los bordes en zigzag de la cinta.
-- **`Main/test_geom.py`**: Un pequeño test para asegurar que al cortar la cinta no nos hemos dejado enlaces colgantes indeseados.
+- **`Main/sisl_hubbard_7agnr.py`**: This is the main script of the project. It builds the geometry of the nanoribbons for different lengths, defines the Tight-Binding Hamiltonian, and calculates $J$ using two different approaches for comparison:
+  1. **Effective Hubbard Dimer**: A simplified model that extracts $t_{\mathrm{eff}}$ and $U_{\mathrm{eff}}$ to yield $J = 4t_{\mathrm{eff}}^2 / U_{\mathrm{eff}}$.
+  2. **Mean-Field Hubbard (MFH)**: An iterative self-consistent calculation that evaluates the actual energy difference between the Ferromagnetic (FM) and Antiferromagnetic (AFM) states.
+- **`Main/23-06-2026.py`**: An auxiliary script using only `numpy` and `scipy` to verify the dimer rule and visualize the probability density of the topological states.
+- **`Main/plot_spin_polarization_en.py`**: A utility to visualize how spins are distributed along the zigzag edges of the nanoribbon.
+- **`Main/test_geom.py`**: A quick test script to ensure that pruning the ribbon doesn't leave unwanted dangling bonds.
 
-## Resultados
+## Results
 
-Al ejecutar el script principal, genera dos gráficas directamente en tu carpeta:
-1. **`J_comparison_vs_L.png`**: Compara cómo decae el acoplamiento magnético $J$ exponencialmente al hacer la cinta más larga ($L$). Le hemos añadido líneas de referencia súper útiles como el gap superconductor $2\Delta$ del Nb(110) a 3.0 meV y la energía térmica de un STM operando a 1.2 K. ¡Así se ve a simple vista si $J$ cae dentro del gap o no!
-2. **`J_diff_vs_L.png`**: Una gráfica para ver exactamente cuánta diferencia de energía (el error o la desviación) hay entre el modelo sencillo del Dímero y la simulación completa de MFH.
+Running the main script generates two comparative plots directly in your directory:
+1. **`J_comparison_vs_L.png`**: Compares how the magnetic coupling $J$ decays exponentially as the ribbon length ($L$) increases. It includes useful reference lines such as the superconducting gap $2\Delta$ of Nb(110) at 3.0 meV and the thermal energy scale of an STM operating at 1.2 K. This allows you to easily see whether $J$ falls within the gap.
+2. **`J_diff_vs_L.png`**: A plot displaying the absolute energy difference (the deviation) between the simple Dimer model and the full MFH simulation.
 
-## Requisitos
+## Requirements
 
-Para poder ejecutar todo sin problemas, tu entorno virtual de Python necesita tener instalados:
-- `numpy` y `scipy`
-- `matplotlib` (para las figuras)
-- `sisl` (es la librería clave que usamos para definir las geometrías complejas y los hamiltonianos de forma sencilla)
+To run the scripts successfully, your Python virtual environment needs the following installed:
+- `numpy` and `scipy`
+- `matplotlib` (for generating the figures)
+- `sisl` (the key library used to easily define complex geometries and Hamiltonians)
 
-¡Espero que el código quede claro! Tienes un montón de comentarios dentro explicando el paso a paso.
+All the steps are thoroughly documented within the code through comments.
