@@ -1,24 +1,20 @@
 """
-Magnetic coupling J in finite 7-AGNRs (L = 4..20 DBBA monomers)
-via two methods:
-  1) Mean-Field Hubbard (MFH): J = E_FM - E_AFM
-  2) Effective Hubbard dimer:  J = 4 t_eff^2 / U_eff
-Generates three plots:
-  - J_MFH_vs_L.png          (Mean-Field Hubbard only)
-  - J_dimer_vs_L.png         (Hubbard dimer only)
-  - J_comparison_vs_L.png    (both methods compared)
+Calculamos el acoplamiento magnético J en cintas 7-AGNR finitas.
+Usamos dos métodos distintos para comparar y ver qué sale:
+  1) Hubbard en Campo Medio (MFH), sacando J como la diferencia de energía E_FM - E_AFM.
+  2) El modelo del Dímero de Hubbard efectivo (un modelo mucho más sencillo basado en Tight-Binding).
+Al final este script saca unas gráficas muy apañadas comparando ambas cosas.
 """
 import sisl
 import numpy as np
 import matplotlib.pyplot as plt
 from hubbard import sp2, HubbardHamiltonian, density
-# ═══════════════════════════════════════════════════════════
-# GEOMETRY
-# ═══════════════════════════════════════════════════════════
+# Primero vamos a definir la geometría de la cinta paso a paso
 def build_7agnr_geometry(L):
     """
-    Build a finite 7-AGNR geometry with L DBBA monomers.
-    1 monomer = 2 unit cells.  Iterative pruning of dangling bonds.
+    Crea una 7-AGNR con L monómeros. 
+    Usamos 2 celdas unidad por monómero y luego podamos los enlaces sueltos 
+    para que la molécula quede bien cerrada en los bordes.
     """
     uc = sisl.geom.agnr(width=7, bond=1.42)
     geom = uc.tile(2 * L, axis=0)
@@ -33,17 +29,13 @@ def build_7agnr_geometry(L):
             break
         geom = geom.remove(to_remove)
     return geom
-# ═══════════════════════════════════════════════════════════
-# METHOD 1 — EFFECTIVE HUBBARD DIMER
-# ═══════════════════════════════════════════════════════════
+# Método 1: El modelo del Dímero de Hubbard Efectivo
 def calculate_J_dimer(geom, U_bare=3.0, t1=-2.7, t2=-0.2, t3=-0.18):
     """
-    Project the 7-AGNR physics onto an effective Hubbard dimer.
-    t_eff  = Delta_gap / 2   (hybridisation gap of the pure TB Hamiltonian)
-    U_eff  = U_bare * sum_i |psi_L(i)|^4
-             where psi_L = (psi_HOMO + psi_LUMO) / sqrt(2) is the
-             localised end state (SPTE)
-    J      = 4 t_eff^2 / U_eff
+    Aquí proyectamos toda la física de la cinta en un dímero simple.
+    Básicamente calculamos t_eff (la mitad del gap) y la U_eff reconstruyendo 
+    el estado topológico localizado en los bordes.
+    Al final, J es simplemente 4 * t_eff^2 / U_eff. ¡Magia!
     """
     # 3NN TB Hamiltonian without spin polarisation
     H_tb = sp2(geom, t1=t1, t2=t2, t3=t3, spin='unpolarized')
@@ -65,12 +57,12 @@ def calculate_J_dimer(geom, U_bare=3.0, t1=-2.7, t2=-0.2, t3=-0.18):
         't_eff': t_eff,
         'U_eff': U_eff,
     }
-# ═══════════════════════════════════════════════════════════
-# METHOD 2 — MEAN-FIELD HUBBARD  (E_FM - E_AFM)
-# ═══════════════════════════════════════════════════════════
+# Método 2: Hubbard en Campo Medio (MFH)
 def calculate_J_mfh(geom, U_val=3.0, t1=-2.7, t2=-0.2, t3=-0.18):
     """
-    Compute J = E_FM - E_AFM from the self-consistent MFH cycle.
+    Acá nos dejamos de simplificaciones y sacamos J calculando la energía total 
+    de los estados ferromagnético (FM) y antiferromagnético (AFM) para ver 
+    su diferencia real tras que el cálculo converja iterativamente.
     """
     H_tb = sp2(geom, t1=t1, t2=t2, t3=t3, spin='polarized')
     # Identify zigzag-edge atoms at the two ends
@@ -97,9 +89,7 @@ def calculate_J_mfh(geom, U_val=3.0, t1=-2.7, t2=-0.2, t3=-0.18):
         'E_afm': E_afm,
         'E_fm': E_fm,
     }
-# ═══════════════════════════════════════════════════════════
-# MAIN LOOP
-# ═══════════════════════════════════════════════════════════
+# Este es el bucle principal donde le damos caña para distintos tamaños de cinta
 def main():
     L_vals = list(range(2, 11))
     U_bare = 3.0
@@ -144,10 +134,8 @@ def main():
     mfh_finite = np.isfinite(J_mfh_abs) & (J_mfh_abs > 0)
     mfh_pos = mfh_finite & (J_mfh_meV > 0)
     mfh_neg = mfh_finite & (J_mfh_meV < 0)
-    # ═════════════════════════════════════════════════════
-    #  PLOT 1 — Mean-Field Hubbard only
-    #  PLOT 1 & 2 — Omitted per user request
-    # ═════════════════════════════════════════════════════
+    # Nos hemos saltado las gráficas individuales porque 
+    # en realidad lo chulo es ver la comparativa directa
     fig1, ax1 = plt.subplots(figsize=(9, 6))
     ax1.plot(L_arr[mfh_pos], J_mfh_abs[mfh_pos],
              'o-', lw=2.5, color='#d62728', markersize=8,
@@ -193,9 +181,7 @@ def main():
     fig2.tight_layout()
     fig2.savefig('J_dimer_vs_L.png', dpi=300, bbox_inches='tight')
     print("-> Saved 'J_dimer_vs_L.png'")
-    # ═════════════════════════════════════════════════════
-    #  PLOT 3 — Comparison (with fit and noise floor)
-    # ═════════════════════════════════════════════════════
+    # Preparamos la gráfica principal comparando ambos métodos
     fig3, ax3 = plt.subplots(figsize=(10, 6))
     # Dimer data + fit
     ax3.plot(L_vals, J_dimer_meV,
@@ -249,9 +235,8 @@ def main():
     fig3.tight_layout()
     fig3.savefig('J_comparison_vs_L.png', dpi=300, bbox_inches='tight')
     print("-> Saved 'J_comparison_vs_L.png'")
-    # ═════════════════════════════════════════════════════
-    #  PLOT 4 — Difference between MFH and Dimer
-    # ═════════════════════════════════════════════════════
+    # Y por último, una gráfica extra para ver exactamente cuánta diferencia 
+    # de energía (error/desviación) hay entre el modelo simple y el completo
     fig4, ax4 = plt.subplots(figsize=(9, 6))
     
     # Calculate absolute difference
