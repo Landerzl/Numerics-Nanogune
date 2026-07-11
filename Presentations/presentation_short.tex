@@ -9,7 +9,7 @@
 \usepackage{graphicx}
 \usepackage{tikz}
 \usepackage{enumitem}
-\usetikzlibrary{positioning}
+\usetikzlibrary{positioning,arrows.meta}
 
 \setlist{itemsep=2pt,topsep=2pt,parsep=0pt}
 
@@ -193,6 +193,62 @@
   \includegraphics[width=0.95\textwidth]{spin_chain_N3_crop.png}
   \begin{itemize}
     \item Singlet ground state; lowest triplet shown --- singlet--triplet gap $\Delta = 11.04$~meV.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Finite-size scaling: a robust spin gap}
+  \centering
+  \includegraphics[width=0.97\textwidth]{spin_gap_fss.png}
+  \begin{itemize}
+    \item ED sweep $N=1$--$5$: $\Delta$ vs.\ $1/N$ (extrapolation) and $\Delta$ vs.\ $N$ (raw trend).
+    \item \alert{$\Delta(1/N\!\to\!0) = 5.791$~meV}: a robust, non-zero gap in the thermodynamic limit --- a gapped, non-trivial collective magnetic phase.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{From spin nodes to STM images: the Tersoff--Hamann bridge}
+  \centering
+  \begin{tikzpicture}[
+      site/.style={circle,draw=nanogune!70!black,fill=nanogune!60,minimum size=5mm},
+      halo/.style={draw=nanogune!40,thick},
+      x=1.1cm]
+    \foreach \x/\w in {0/0.3,1/0.9,2/0.5,3/0.95,4/0.35}{
+      \draw[halo,opacity=0.15+0.55*\w] (\x,0) circle (0.9);
+      \draw[halo,opacity=0.10+0.35*\w] (\x,0) circle (0.55);
+      \node[site,scale=0.6+0.6*\w] at (\x,0) {};
+    }
+    \node at (2,-1.15) {\scriptsize discrete sites $i$, weights $W_i$};
+    \draw[-{Latex[length=3mm]},very thick,nanogune] (4.9,0) -- (6.1,0);
+    \node at (5.5,0.35) {\scriptsize $e^{-\kappa r}$};
+    \begin{scope}[shift={(9,0)}]
+      \shade[inner color=nanogune!90,outer color=white,opacity=0.9] (0,0) circle (1.6);
+      \shade[inner color=nanogune!70,outer color=white,opacity=0.7] (-1.6,0) circle (1.1);
+      \shade[inner color=nanogune!60,outer color=white,opacity=0.6] (1.9,0) circle (1.0);
+    \end{scope}
+    \node at (9,-1.15) {\scriptsize continuous $dI/dV(x,y)$ image};
+  \end{tikzpicture}
+  \[
+    \frac{dI}{dV}(x,y) \;\propto\; \sum_i W_i \sum_{\alpha\in\text{site }i} \exp\!\big(-\kappa\,r_\alpha(x,y)\big)
+  \]
+  \begin{itemize}
+    \item $W_i = \sum_m\sum_{\mu=x,y,z}|\langle 1_m|S_i^\mu|0\rangle|^2$: spin-flip spectral weight of each site, spread over its \alert{real carbon coordinates}.
+    \item Exponential decay $\kappa$ (constant-height vacuum tunneling) acts as a spatial broadening kernel.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Simulated spatial IETS map ($N=3$, $\Delta = 11.04$~meV)}
+  \centering
+  \includegraphics[width=0.97\textwidth]{iets_didv_map_N3.png}
+  \begin{itemize}
+    \item \alert{Lighthouse effect}: excitation localized on the central [3]triangulene core (sites 5, 6).
+    \item Dark interference regions on the internal phenalenyl linkers --- signature of spin frustration.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Point-spectroscopy IETS waterfall: where to park the tip}
+  \centering
+  \includegraphics[width=\textwidth,height=0.76\textheight,keepaspectratio]{iets_waterfall_N3.png}
+  \begin{itemize}
+    \item \alert{Sites 5, 6} maximal; \alert{sites 3, 4, 7, 8} quenched --- a roadmap for tip placement.
   \end{itemize}
 \end{frame}
 

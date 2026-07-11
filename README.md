@@ -3,7 +3,7 @@
 This repository contains computational tools and scripts to study magnetic exchange coupling ($J$) in finite nanographene systems. Two main projects are included:
 
 1. **7-AGNR** — Magnetic coupling in finite 7-Armchair Graphene Nanoribbons.
-2. **Triangulene-Phenalenyl** — Heisenberg spin-chain model of phenalenyl–[3]triangulene oligomers.
+2. **Triangulene-Phenalenyl** — Heisenberg spin-chain model and IETS simulation of phenalenyl–[3]triangulene oligomers.
 
 ---
 
@@ -14,11 +14,11 @@ This repository contains computational tools and scripts to study magnetic excha
 ├── 7-AGNR/
 │   └── Main/
 │       ├── sisl_hubbard_7agnr.py
-│       ├── predict_J.py           ← NEW
+│       ├── predict_J.py
 │       ├── plot_spin_polarization_en.py
 │       ├── test_geom.py
 │       └── Figures/
-├── Triangulene-Phenalenyl/        ← NEW
+├── Triangulene-Phenalenyl/
 │   ├── Geometry checks/
 │   │   ├── build_v2.py
 │   │   ├── build_monomer.py
@@ -26,7 +26,19 @@ This repository contains computational tools and scripts to study magnetic excha
 │   ├── Heisenberg chain/
 │   │   ├── spin_chain_qutip.py
 │   │   ├── verify_ed.py
-│   │   └── ed_result.npz
+│   │   ├── fss_spin_gap.py
+│   │   ├── ed_result.npz
+│   │   ├── model.tex / model.pdf
+│   │   ├── spin_chain_N3.png
+│   │   ├── spin_chain_ed.png
+│   │   └── spin_gap_fss.png
+│   ├── IETS_Simulation/
+│   │   ├── iets_spatial_map.py
+│   │   ├── iets_waterfall.py
+│   │   ├── monomer3.xyz
+│   │   ├── iets_theory.tex / iets_theory.pdf
+│   │   ├── dIdV_Maps/           ← created on run
+│   │   └── Waterfall_Plots/     ← created on run
 │   └── Spin Polarization check/
 │       ├── 1 monomer/
 │       │   ├── SpinPlotTriangulenes.py
@@ -34,9 +46,25 @@ This repository contains computational tools and scripts to study magnetic excha
 │       └── 3 monomer/
 │           ├── SpinPlotTriangulenes.py
 │           └── monomer3.xyz
-├── figs/
-├── presentation.pdf
-└── presentation_short.pdf
+├── Presentations/
+│   ├── presentation.tex / presentation.pdf
+│   └── presentation_short.tex / presentation_short.pdf
+└── figs/
+    ├── J_MFH_vs_L.png
+    ├── J_comparison_vs_L.png
+    ├── J_dimer_vs_L.png
+    ├── J_diff_vs_L.png
+    ├── spin_polarization_L6.png
+    ├── spin_polarization_L12.png
+    ├── oligomer_closed.png
+    ├── spin_density_monomer1.png
+    ├── spin_density_monomer3.png
+    ├── spin_chain_N3.png
+    ├── spin_chain_N3_crop.png
+    ├── spin_gap_fss.png
+    ├── iets_didv_map_N3.png
+    ├── iets_waterfall_N3.png
+    └── test_geom_L4.png
 ```
 
 ---
@@ -53,7 +81,7 @@ This project systematically compares two theoretical approaches to evaluate the 
   1. **Effective Hubbard Dimer**: Extracts the effective hopping ($t_{\mathrm{eff}}$) and Coulomb repulsion ($U_{\mathrm{eff}}$) to estimate $J = 4t_{\mathrm{eff}}^2 / U_{\mathrm{eff}}$.
   2. **Mean-Field Hubbard (MFH)**: Performs a self-consistent calculation to find the total energy difference between the Ferromagnetic (FM) and Antiferromagnetic (AFM) ground states ($J = E_{\mathrm{FM}} - E_{\mathrm{AFM}}$).
 
-- **`predict_J.py`** *(new)* — CLI tool for predicting the number of DBBA monomers and extrapolated $J_{\mathrm{MFH}}$ from an experimental nanoribbon length (in nm). Fits an exponential decay to computed MFH data and extrapolates to the given length.
+- **`predict_J.py`** — CLI tool for predicting the number of DBBA monomers and extrapolated $J_{\mathrm{MFH}}$ from an experimental nanoribbon length (in nm). Fits an exponential decay to computed MFH data and extrapolates to the given length.
 
   **Usage:**
   ```bash
@@ -71,11 +99,11 @@ The calculations yield plots showing the exponential decay of $J$ with the numbe
 
 ---
 
-## 2. Triangulene-Phenalenyl: Heisenberg Spin Chain *(new)*
+## 2. Triangulene-Phenalenyl
 
 ### Overview
 
-This project models oligomers of phenalenyl–[3]triangulene (P–T–P) nanographene units as a 1D Heisenberg spin chain and extracts the spin gap and local spin texture via exact diagonalization (ED).
+This project models oligomers of phenalenyl–[3]triangulene (P–T–P) nanographene units as a 1D Heisenberg spin chain, extracts the spin gap and local spin texture via exact diagonalization (ED), and simulates the corresponding IETS/STM signatures.
 
 **Polymer sequence:** $[\mathrm{P}$–$\mathrm{T}$–$\mathrm{P}]_N$ — each monomer contributes 4 spin-$\frac{1}{2}$ sites:
 - $P$: phenalenyl radical (one $S = \frac{1}{2}$ site)
@@ -113,9 +141,25 @@ Exact diagonalization of the Heisenberg model for the P–T–P chain.
 
 - **`verify_ed.py`** — Lightweight cross-check of the ED using `scipy.sparse`. Computes the same spectrum and spin texture without QuTiP. Saves results to `ed_result.npz` for further analysis.
 
+- **`fss_spin_gap.py`** — Finite-size scaling (FSS) of the singlet–triplet spin gap. Sweeps $N = 1\ldots5$ monomers using a sparse ARPACK solver (via QuTiP), extracts $\Delta(N) = E_1 - E_0$, and extrapolates linearly in $1/N$ to estimate the thermodynamic limit gap. Saves a two-panel figure (`spin_gap_fss.png`) showing both the FSS plot and the raw trend.
+
 - **`ed_result.npz`** — Cached ED output (energies, spin gap, local magnetizations) for $N = 3$ monomers.
 
 - **`model.tex / model.pdf`** — LaTeX document summarizing the model, Hamiltonian, and numerical results.
+
+#### `IETS_Simulation/`
+
+Simulation of the inelastic electron tunneling spectroscopy (IETS) signal expected from the P–T–P polymer in an STM experiment, using the Tersoff–Hamann approximation.
+
+- **`iets_spatial_map.py`** — Computes the spatially resolved $dI/dV$ map of the first magnetic excitation (singlet → triplet spin flip). For each grid point $(x,y)$ above the molecule it evaluates the Tersoff–Hamann tunneling current weighted by the per-site spin-flip transition weights $W_i$ obtained from ED. Saves `dIdV_Maps/iets_didv_map_N3.png`.
+
+- **`iets_waterfall.py`** — Simulates point-spectroscopy $dI/dV(V)$ spectra for each of the 12 spin sites (tip parked at the site centroid). The inelastic step amplitude at each site is set by the full molecule-wide Tersoff–Hamann decay sum. Spectra are stacked as a waterfall plot. Saves `Waterfall_Plots/iets_waterfall_N3.png`.
+
+- **`monomer3.xyz`** — Optimized geometry of the $N=3$ P–T–P oligomer (input for both IETS scripts).
+
+- **`iets_theory.tex / iets_theory.pdf`** — LaTeX document describing the IETS model and results.
+
+> **Workflow:** Both IETS scripts read `monomer3.xyz` from the same folder and create their output subdirectories automatically on first run.
 
 #### `Spin Polarization check/`
 
@@ -146,13 +190,16 @@ hubbard    # local module for Mean-Field Hubbard calculations
 numpy
 scipy
 matplotlib
-sisl       # geometry construction (Geometry checks)
-qutip      # exact diagonalization (Heisenberg chain)
+sisl       # geometry construction (Geometry checks, Spin Polarization check)
+qutip      # exact diagonalization (Heisenberg chain, IETS Simulation)
+hubbard    # Mean-Field Hubbard (Spin Polarization check)
 ```
 
 ---
 
 ## Presentations
 
-- [`presentation.pdf`](./presentation.pdf) — Full presentation of results.
-- [`presentation_short.pdf`](./presentation_short.pdf) — Condensed version.
+All presentation sources and compiled PDFs are located in `Presentations/`:
+
+- [`presentation.pdf`](./Presentations/presentation.pdf) — Full presentation of results.
+- [`presentation_short.pdf`](./Presentations/presentation_short.pdf) — Condensed version.

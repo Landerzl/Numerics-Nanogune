@@ -1,0 +1,140 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+\title{Bridging the Heisenberg Spin Model to Spatial IETS $dI/dV$ Maps\\
+\large Triangulene--Phenalenyl Nanographene Polymer}
+\author{}
+\date{\today}
+
+\newcommand{\ket}[1]{\left|#1\right\rangle}
+\newcommand{\bra}[1]{\left\langle#1\right|}
+\newcommand{\braket}[2]{\left\langle#1\middle|#2\right\rangle}
+\newcommand{\melem}[3]{\left\langle#1\middle|#2\middle|#3\right\rangle}
+\renewcommand{\vec}[1]{\mathbf{#1}}
+
+\begin{document}
+\maketitle
+
+\section{Introduction: from a discrete spin lattice to a spatial STM observable}
+
+The low-energy magnetism of the phenalenyl--triangulene copolymer
+$P\!-\!T\!-\!P\!-\![P\!-\!T\!-\!P]_{N-1}$ is captured by a Heisenberg Hamiltonian on
+a chain of $4N$ spin-$\tfrac12$ sites. With the ordering $[P,T_a,T_b,P]$ inside
+each monomer,
+\begin{equation}
+  H \;=\;
+  \sum_{m=0}^{N-1}\!\Big[
+      J_{TP}\big(\vec S_{4m}\!\cdot\!\vec S_{4m+1}
+               +\vec S_{4m+2}\!\cdot\!\vec S_{4m+3}\big)
+    + J_{T}\,\vec S_{4m+1}\!\cdot\!\vec S_{4m+2}\Big]
+  + J_{PP}\!\sum_{m=0}^{N-2}\! \vec S_{4m+3}\!\cdot\!\vec S_{4m+4},
+  \label{eq:H}
+\end{equation}
+with $J_{PP}=38$~meV, $J_{TP}=40$~meV and $J_{T}=-500$~meV. Exact
+diagonalization yields a total-singlet ground state $\ket{0}$ ($S=0$) and, as the
+first magnetic excitation, a triplet multiplet $\{\ket{1_m}\}_{m=-1,0,+1}$ ($S=1$)
+separated by the spin gap $\Delta=E_1-E_0$.
+
+Inelastic electron tunneling spectroscopy (IETS) in a low-temperature STM probes
+exactly this excitation: when the bias energy $e|V|$ exceeds $\Delta$, a tunneling
+electron can flip the local spin and open an inelastic channel, producing a
+symmetric step in $dI/dV$ at $e|V|=\Delta$. Crucially, the \emph{intensity} of
+that step is spatially resolved, because it is governed by the local spin
+matrix element between $\ket{0}$ and $\ket{1_m}$ at the position of the tip. The
+purpose of this note is to make explicit the bridge between the discrete spin
+model~\eqref{eq:H} and the continuous $dI/dV(x,y)$ image recorded in experiment.
+
+\section{Transition weights from the spin operators}
+
+To second order in the tip--sample coupling, the inelastic spin-flip conductance
+at site $i$ is proportional to the Fermi-golden-rule rate summed over the
+degenerate final states of the excitation. For a spin-$\tfrac12$ scatterer the
+relevant tunneling vertex is the local spin operator
+$\vec S_i=(S_i^x,S_i^y,S_i^z)$, so the \emph{per-site transition weight} reads
+\begin{equation}
+  W_i \;=\; \sum_{m}\sum_{\alpha=x,y,z}
+            \big|\melem{1_m}{S_i^{\alpha}}{0}\big|^{2},
+  \label{eq:Wi}
+\end{equation}
+where the inner sum runs over the three Cartesian spin components and the outer
+sum over the members $m$ of the final triplet multiplet. Writing out the three
+terms for a single final state,
+\begin{equation}
+  W_i \;=\; \big|\melem{1}{S_i^{x}}{0}\big|^{2}
+          + \big|\melem{1}{S_i^{y}}{0}\big|^{2}
+          + \big|\melem{1}{S_i^{z}}{0}\big|^{2},
+  \label{eq:Wi-single}
+\end{equation}
+which is the form used operationally. Summing over the full multiplet
+in~\eqref{eq:Wi} is important: because the triplet is three-fold degenerate,
+any individual $\ket{1_m}$ returned by the diagonalizer is defined only up to an
+arbitrary unitary rotation within the multiplet, whereas the sum in
+Eq.~\eqref{eq:Wi} is invariant. Indeed, since $\ket{0}$ is a spin singlet
+($S=0,\,S_z=0$), the selection rules make the assignment transparent:
+$S_i^{z}$ connects $\ket{0}$ only to the $S_z=0$ triplet member, while
+$S_i^{x},S_i^{y}$ (equivalently $S_i^{\pm}=S_i^{x}\pm i S_i^{y}$) connect it to the
+$S_z=\pm1$ members. The multiplet sum therefore collects the complete spin-flip
+spectral weight localized on site $i$,
+\begin{equation}
+  W_i \;=\; \sum_{m}\melem{0}{\vec S_i}{1_m}\cdot\melem{1_m}{\vec S_i}{0},
+\end{equation}
+a real, rotationally invariant quantity that plays the role of a local
+``inelastic magnetic susceptibility'' of the transition. For the $N=3$ chain the
+$W_i$ are largest on the triangulene sites $T_a,T_b$ (which carry the dominant
+$S=1$ character) and are symmetric under the mirror operation of the chain,
+consistent with the symmetry of Eq.~\eqref{eq:H}.
+
+\section{Phenomenological spatial mapping (Tersoff--Hamann)}
+
+To turn the site-resolved weights $W_i$ into a real-space image we adopt the
+Tersoff--Hamann description of STM, in which the tunneling current at tip
+position $\vec r_{\text{tip}}$ is proportional to the local density of states of
+the sample evaluated at the tip. For an $s$-wave tip the sample orbitals decay
+exponentially into the vacuum barrier,
+\begin{equation}
+  \psi(\vec r)\;\sim\;\exp\!\big(-\kappa\,|\vec r-\vec r_{\alpha}|\big),
+  \qquad
+  \kappa=\frac{\sqrt{2m_e\phi}}{\hbar},
+  \label{eq:decay}
+\end{equation}
+where $\phi$ is the effective work function and $\kappa$ the inverse vacuum decay
+length (of order $1~\text{\AA}^{-1}$). Each magnetic site $i$ is spatially
+distributed over the carbon atoms $\alpha$ that build the corresponding
+$\pi$-radical (one phenalenyl, or one half of a triangulene). Placing the tip at
+constant height $z_0$ above the molecular plane, $\vec r_{\text{tip}}=(x,y,z_0)$
+and $\vec r_\alpha=(x_\alpha,y_\alpha,0)$, and weighting each atomic contribution
+by the transition weight of its site, the simulated inelastic conductance map is
+\begin{equation}
+  \boxed{\;
+  \frac{dI}{dV}(x,y)\;\propto\;
+    \sum_{i=0}^{4N-1} W_i
+    \sum_{\alpha\,\in\,\text{site }i}
+    \exp\!\Big(-\kappa\sqrt{(x-x_\alpha)^2+(y-y_\alpha)^2+z_0^2}\,\Big).
+  \;}
+  \label{eq:map}
+\end{equation}
+Equation~\eqref{eq:map} is the central phenomenological object: the spin physics
+enters entirely through the weights $W_i$ of Eq.~\eqref{eq:Wi}, while the
+exponential kernel of Eq.~\eqref{eq:decay} supplies the spatial broadening and the
+constant-height blurring set by $z_0$. Larger $\kappa$ or smaller $z_0$ sharpen
+the image toward the atomic positions; smaller $\kappa$ or larger $z_0$ produce
+the smooth lobes characteristic of experimental constant-height maps.
+
+\paragraph{Bias condition.}
+The map~\eqref{eq:map} is the spatial fingerprint of the \emph{single}
+excitation of energy $\Delta$. It corresponds to tuning the STM bias to the
+inelastic threshold,
+\begin{equation}
+  e\,V \;=\; \Delta \;=\; E_1-E_0,
+\end{equation}
+i.e.\ the voltage at which the singlet$\rightarrow$triplet spin-flip channel
+opens. Recording $dI/dV$ at this bias and rastering the tip over the molecule
+yields, within this model, the image predicted by Eq.~\eqref{eq:map}, directly
+comparable to LT-STM IETS data.
+
+\end{document}
